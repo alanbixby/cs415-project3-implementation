@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Literal
 
+import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -20,7 +21,7 @@ def fetch_team_df(  # type: ignore
         "twitter_stream", "reddit_stream_comments", "reddit_stream_submissions"
     ],
     mode: Literal["polarity", "subjectivity", "sentiment", "frequency"] = "polarity",
-    focus_datetime: datetime = datetime(2022, 11, 14, 12, 0, 0, tzinfo=timezone.utc),
+    focus_datetime: datetime = datetime(2022, 11, 9, 12, 0, 0, tzinfo=timezone.utc),
     window_before: timedelta = timedelta(days=2),
     window_after: timedelta = timedelta(days=2),
     sample_window: str = "180T",
@@ -66,16 +67,17 @@ def fetch_team_df(  # type: ignore
             team_df.sort_index().rolling(sample_window, min_periods=1).mean().fillna(0)
         )
     else:
+        print("freq")
         """take the rolling sum of polarity and subjectivty"""
         team_df = (
-            team_df.sort_index().rolling(sample_window, min_periods=1).sum().fillna(0)
+            team_df.sort_index().rolling(sample_window, min_periods=1).count().fillna(0)
         )
         team_df = team_df.rename(columns={"polarity": "frequency"})
         team_df = team_df.drop(columns=["subjectivity"])
 
     """prune the data to the window"""
-    team_df = team_df[(team_df.index >= focus_datetime - window_before)]
-    
+    team_df = team_df[team_df.index <= np.datetime64(focus_datetime - window_before)]
+
     print(team_df)
 
     return team_df

@@ -14,7 +14,7 @@ sys.path.append("util")
 from util.team_name_to_entitlements import team_name_to_entitlements
 from util.team_name_to_subreddit import team_name_to_subreddit
 
-print(team_name_to_subreddit("test"))
+print(team_name_to_subreddit("new england"))
 # %%
 
 sys.path.append("util")
