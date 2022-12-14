@@ -1,12 +1,11 @@
 import json
 import os
-import sys
 from typing import Dict
 
 from thefuzz import process
 
 with open(
-    os.path.join(sys.path[0], "./teamToSubreddits.json"), "r"
+    os.path.join(os.path.dirname(__file__), "./teamToSubreddits.json"), "r"
 ) as team_entitlement_json:
     reddit_lookup: Dict[str, str] = json.load(team_entitlement_json)
 

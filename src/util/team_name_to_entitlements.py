@@ -1,12 +1,11 @@
 import json
 import os
-import sys
 from typing import Dict, List
 
 from thefuzz import process
 
 with open(
-    os.path.join(sys.path[0], "./teamToEntitlementIds.json"), "r"
+    os.path.join(os.path.dirname(__file__), "./teamToEntitlementIds.json"), "r"
 ) as team_entitlement_json:
     team_entitlement_mappings: Dict[str, List[str]] = json.load(team_entitlement_json)
 
