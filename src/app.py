@@ -1,5 +1,5 @@
 import sys
-from typing import Any, List
+from typing import Any, Dict, List
 
 import seaborn as sns
 import uvicorn
@@ -8,12 +8,13 @@ from matplotlib import pyplot as plt
 from pandas import DataFrame
 
 from fetch_team_df import fetch_team_df
+from get_games import get_games
 
 app = FastAPI()
 
 
 @app.get("/")
-async def root() -> dict[str, Any]:
+async def root() -> Dict[str, Any]:
     return {"message": "Hello World!"}
 
 
@@ -26,6 +27,10 @@ def fetch_df_data(type: str, data_source: str, team_name: str) -> DataFrame:
 @app.get("/df/sentiment/{team_name}")
 async def df_sentiment_data(team_name: str) -> None:
     return
+
+@app.get("/games")
+async def get_recorded_games() -> List[Dict[str, Any]]:
+    return get_games() # type: ignore
 
 
 if __name__ == "__main__":

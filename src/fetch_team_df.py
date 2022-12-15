@@ -18,37 +18,46 @@ db = client[os.environ["MONGO_DB_NAME"]]
 def fetch_team_df(  # type: ignore
     team_name: str,
     collection: Literal[
-        "twitter_stream", "reddit_stream_comments", "reddit_stream_submissions"
-    ],
+        "twitter_stream",
+        "reddit_stream_comments",
+        "reddit_stream_submissions",
+        "reddit",
+        "twitter",
+    ] = "reddit_stream_comments",
     mode: Literal["polarity", "subjectivity", "sentiment", "frequency"] = "polarity",
-    focus_datetime: datetime = datetime(2022, 11, 9, 12, 0, 0, tzinfo=timezone.utc),
+    focus_datetime: datetime = datetime(2022, 11, 14, 12, 0, 0, tzinfo=timezone.utc),
     window_before: timedelta = timedelta(days=2),
     window_after: timedelta = timedelta(days=2),
-    sample_window: str = "180T",
+    sample_window: str = "2D",
+    all_data: bool = False,
 ) -> pd.DataFrame:
-    if collection == "twitter_stream":
+    if collection in ["twitter_stream", "twitter"]:
+        collection = "twitter_stream"
         team_entitlements: List[str] = team_name_to_entitlements(team_name)
         query = {"context_annotations.entity.id": {"$in": team_entitlements}}
-    elif (
-        collection == "reddit_stream_comments"
-        or collection == "reddit_stream_submissions"
-    ):
+    elif collection in ["reddit_stream_comments", "reddit"]:
+        collection = "reddit_stream_comments"
         team_subreddit = team_name_to_subreddit(team_name)
         query = {"subreddit": team_subreddit}
     else:
         raise ValueError("Invalid collection name")
+
+    data_restriction: Dict[str, Any] = {}
+    if not all_data:
+        data_restriction = {
+            "created_at": {
+                "$gte": focus_datetime - window_before - pd.to_timedelta(sample_window),
+                "$lt": focus_datetime + window_after,
+            }
+        }
+
 
     """select data; take the sampling width before the window then prune it after taking the rolling average to prevent visual artifacts"""
     team_data: List[Dict[str, Any]] = list(
         db[collection].find(
             {
                 **query,
-                "created_at": {
-                    "$gte": focus_datetime
-                    - window_before
-                    - pd.to_timedelta(sample_window),
-                    "$lt": focus_datetime + window_after,
-                },
+                **data_restriction
             }
         )
     )
@@ -67,7 +76,6 @@ def fetch_team_df(  # type: ignore
             team_df.sort_index().rolling(sample_window, min_periods=1).mean().fillna(0)
         )
     else:
-        print("freq")
         """take the rolling sum of polarity and subjectivty"""
         team_df = (
             team_df.sort_index().rolling(sample_window, min_periods=1).count().fillna(0)
@@ -76,8 +84,6 @@ def fetch_team_df(  # type: ignore
         team_df = team_df.drop(columns=["subjectivity"])
 
     """prune the data to the window"""
-    team_df = team_df[team_df.index <= np.datetime64(focus_datetime - window_before)]
-
-    print(team_df)
+    team_df = team_df[team_df.index >= np.datetime64(focus_datetime - window_before)]
 
     return team_df
