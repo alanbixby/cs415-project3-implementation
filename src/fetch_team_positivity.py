@@ -3,7 +3,7 @@ import os
 from typing import Dict, Tuple
 
 from fetch_team_df import fetch_team_df
-from src.df_integration import df_int
+from df_integration import df_int
 from typing import Dict, List, Literal
 
 with open(
@@ -26,8 +26,8 @@ def fetch_team_positivity_sort(chosen_data: Literal["twitter", "reddit"]) -> Lis
 
     return team_results
 
-def fetch_most_pos_team(data_source: Literal["reddit", "twitter"]) -> str:
+def fetch_most_pos_team(data_source: Literal["twitter", "reddit"]) -> str:
     return fetch_team_positivity_sort(data_source)[0][0]
 
-def fetch_least_pos_team(data_source: Literal["reddit", "twitter"]) -> str:
+def fetch_least_pos_team(data_source: Literal["twitter", "reddit"]) -> str:
     return fetch_team_positivity_sort(data_source)[-1][0]

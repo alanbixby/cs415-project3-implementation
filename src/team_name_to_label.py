@@ -41,6 +41,8 @@ def team_name_to_label(team_name: str, score_cutoff: int = 80) -> str:
         team_name, team_labels, score_cutoff=score_cutoff
     )
 
+    print("closest match to ", team_name, "is", closest_team_name)
+
     # If the team name is not found, raise an error
     if closest_team_name is None:
         raise KeyError(f"Could not find team name {team_name}")

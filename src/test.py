@@ -7,15 +7,21 @@ import seaborn as sns
 
 from fetch_team_df import fetch_team_df
 from get_games import get_games
-from fetch_most_pos_team import fetch_most_pos_team
+from fetch_team_positivity import fetch_team_positivity_sort
 
-sns.set_theme(style="darkgrid")
+sns.set_theme(style="whitegrid")
 
 games = get_games()
-game = games[0]
+game = games[1]
 
-home = fetch_team_df(game["home_team"], "reddit_stream_comments", "sentiment", all_data=True)
-away = fetch_team_df(game["away_team"], "reddit_stream_comments", "sentiment", all_data=True)
+home = fetch_team_df(game["away_team"], "reddit", "sentiment", all_data=True)
+
+
+
+"""save home to a pickle file"""
+home.to_pickle(f"{str(game['home_team'])}_reddit_sentiment.pkl")
+
+print(home)
 
 """plot the home and away polarity data"""
 
@@ -33,7 +39,7 @@ from bookmaker_to_collection import bookmaker_to_collection
 bookmaker_to_collection("draftk")
 
 # %%
-most_pos_team = fetch_most_pos_team()
+most_pos_team = fetch_team_positivity_sort("reddit")
 
 print(most_pos_team)
 # %%
@@ -42,4 +48,14 @@ from team_name_to_label import team_name_to_label
 
 print(team_name_to_label("new england"))
 
+# %%
+
+from get_odds import get_games_per_team
+
+get_games_per_team(["eagles"])
+
+# %%
+from plot_odds import plot_odds
+
+plot_odds("Houston Texans", "Philadelphia Eagles", "fanduel")
 # %%
