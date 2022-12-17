@@ -41,9 +41,9 @@ def get_avg_odds(odds: List[Odds], reddit_diff, twitter_diff, winner) -> Dict[st
         f"{team2_name}_pt": team2_avg,
         f"{team1_name}_prob": team1_prob,
         f"{team2_name}_prob": team2_prob,
-        'reddit_agreement': reddit_diff['predicted_winner'] == prediction,
-        'twitter_agreement': twitter_diff['predicted_winner'] == prediction,
-        'reality_agreement': team1_prob > team2_prob and team1_name == winner or team2_prob > team1_prob and team2_name == winner
+        'reddit_agreement': reddit_diff['predicted_winner'] == prediction, # does reddit match the bookmaker?
+        'twitter_agreement': twitter_diff['predicted_winner'] == prediction, # does twitter match the bookmaker?
+        'reality_agreement': prediction == winner # did the game outcome match the bookmaker?
     }
 
 
