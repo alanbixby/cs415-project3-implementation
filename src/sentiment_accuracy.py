@@ -88,42 +88,20 @@ for game in nfl_games:
             (x for x in game_odds["h2h"] if x["saved_at"] <= game_odds["commence_time"])
         )[-1]
 
-        last_24h_odds: List[Odds] = list(
+        last_2d_odds: List[Odds] = list(
             (
                 x
                 for x in game_odds["h2h"]
                 if x["saved_at"] <= game_odds["commence_time"]
-                and x["saved_at"] >= game_odds["commence_time"] - timedelta(hours=24)
-            )
-        )
-
-        last_3d_odds: List[Odds] = list(
-            (
-                x
-                for x in game_odds["h2h"]
-                if x["saved_at"] <= game_odds["commence_time"]
-                and x["saved_at"] >= game_odds["commence_time"] - timedelta(days=3)
-            )
-        )
-
-        last_5d_odds: List[Odds] = list(
-            (
-                x
-                for x in game_odds["h2h"]
-                if x["saved_at"] <= game_odds["commence_time"]
-                and x["saved_at"] >= game_odds["commence_time"] - timedelta(days=5)
+                and x["saved_at"] >= game_odds["commence_time"] - timedelta(days=2)
             )
         )
 
         last_odd_before_avg = get_avg_odds([last_odd_before], game_diff_reddit, game_diff_twitter, game['winner'])
-        last_24h_odds_avg = get_avg_odds(last_24h_odds, game_diff_reddit, game_diff_twitter, game['winner'])
-        last_3d_odds_avg = get_avg_odds(last_3d_odds, game_diff_reddit, game_diff_twitter, game['winner'])
-        last_5d_odds_avg = get_avg_odds(last_5d_odds, game_diff_reddit, game_diff_twitter, game['winner'])
+        last_24h_odds_avg = get_avg_odds(last_2d_odds, game_diff_reddit, game_diff_twitter, game['winner'])
         retVal = {}
         retVal["last"] = last_odd_before_avg
-        retVal["24h"] = last_24h_odds_avg
-        retVal["3d"] = last_3d_odds_avg
-        retVal["5d"] = last_5d_odds_avg
+        retVal["2d"] = last_24h_odds_avg
         results[game["_id"]][bookmaker] = retVal
         j = j + 1
         print(retVal)

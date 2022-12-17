@@ -12,11 +12,11 @@ from team_name_to_label import team_name_to_label
 
 
 def plot_team_polarity(  # type: ignore
-    team_name: str, data_source: Literal["reddit", "twitter"], sample_window: str, resample_window,
+    team_name: str, data_source: Literal["reddit", "twitter"], resample_window,
 ) -> Figure:
     team_name_prettified = team_name_to_label(team_name)
     sns.set_theme(style="whitegrid")
-    df = fetch_team_df(team_name, data_source, sample_window, resample_window, all_data=True)
+    df = fetch_team_df(team_name, data_source, "sentiment", resample_window, all_data=True)
     fig = plt.figure()
     ax = sns.lineplot(data=df["polarity"])
 
@@ -29,7 +29,6 @@ def plot_team_polarity(  # type: ignore
 
     # zip start and end times together
     for start, end, winner in zip(start_times, end_times, winners):
-        print(winner, team_name_prettified)
         if winner.lower() == team_name_prettified.lower():
             ax.axvspan(start, end, alpha=0.5, color="green")
         else:
@@ -43,7 +42,6 @@ def plot_team_polarity(  # type: ignore
     ax.set_ylabel("Polarity Score")
     plt.tight_layout()
 
-    print(associated_games)
 
     return fig
 

@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
 from team_name_to_entitlements import team_name_to_entitlements
 from team_name_to_subreddit import team_name_to_subreddit
 
@@ -65,21 +66,28 @@ def fetch_team_df(  # type: ignore
     if mode in ["polarity", "subjectivity", "sentiment"]:
         """take the rolling average of polarity and subjectivty"""
         team_df = (
-            team_df.sort_index().rolling(sample_window, min_periods=1).mean().fillna(0)
+            team_df.sort_index()
+            .rolling(sample_window, min_periods=1)
+            .mean()
+            .interpolate()
         )
     else:
         """take the rolling sum of polarity and subjectivty"""
         team_df = (
-            team_df.sort_index().rolling(sample_window, min_periods=1).count().fillna(0)
+            team_df.sort_index()
+            .rolling(sample_window, min_periods=1)
+            .count()
+            .interpolate()
         )
         team_df = team_df.rename(columns={"polarity": "frequency"})
         team_df = team_df.drop(columns=["subjectivity"])
 
     """prune the data to the window"""
-    team_df = team_df[
-        team_df.index >= np.datetime64(focus_datetime - window_before)
-    ]
+    if not all_data:
+        team_df = team_df[
+            team_df.index >= np.datetime64(focus_datetime - window_before)
+        ]
 
-    team_df = team_df.resample(resample_window).mean().fillna(0)
+    team_df = team_df.resample(resample_window).mean().interpolate()
 
     return team_df

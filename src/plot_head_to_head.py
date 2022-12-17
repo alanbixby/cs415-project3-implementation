@@ -113,14 +113,16 @@ def calculate_sentiment_diff(  # type: ignore
         nfl_game["away_team"], data_source, focus_datetime=nfl_game["timestamp"]
     )
     
-    home_team_score = df_int(home_team_df)
-    away_team_score = df_int(away_team_df)
+    home_team_sentiment_score = df_int(home_team_df)
+    away_team_sentiment_score = df_int(away_team_df)
+
+    predicted_winner = home_team_sentiment_score > away_team_sentiment_score and nfl_game["home_team"] or away_team_sentiment_score > home_team_sentiment_score and nfl_game["away_team"]
 
     return {
-        nfl_game["home_team"]: home_team_score,
-        nfl_game["away_team"]: away_team_score,
-        "delta": home_team_score - away_team_score,
-        "predicted_winner": home_team_score > away_team_score and nfl_game["home_team"] or away_team_score > home_team_score and nfl_game["away_team"],
+        nfl_game["home_team"]: home_team_sentiment_score,
+        nfl_game["away_team"]: away_team_sentiment_score,
+        "delta": home_team_sentiment_score - away_team_sentiment_score,
+        "predicted_winner": predicted_winner,
         "winner": nfl_game["winner"],
-        "theory_supporting": home_team_score > away_team_score and nfl_game["winner"] == nfl_game["home_team"] or home_team_score < away_team_score and nfl_game["winner"] == nfl_game["away_team"]
+        "theory_supporting": predicted_winner == nfl_game["winner"]
     }
