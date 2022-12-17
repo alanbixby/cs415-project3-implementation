@@ -65,8 +65,8 @@ def plot_odds(game_id: str , bookmaker: str) -> Figure:  # type: ignore
             # print(game[i])
             for k in range(len(game[i])):
                 outputs[0].append(pd.to_datetime(game[i][k]["saved_at"]))
-                outputs[1].append(get_prob(game[i][k]["outcomes"][0]["price"]))
-                outputs[2].append(get_prob(game[i][k]["outcomes"][1]["price"]))
+                outputs[1].append(get_prob(-1*game[i][k]["outcomes"][0]["price"]))
+                outputs[2].append(get_prob(-1*game[i][k]["outcomes"][1]["price"]))
 
             plt.title(f"{bookmaker_collection[5:]} odds leading up to game")
 
@@ -101,3 +101,5 @@ def plot_odds(game_id: str , bookmaker: str) -> Figure:  # type: ignore
             plt.tight_layout()
 
     return fig
+
+get_prob(-186)

@@ -9,11 +9,12 @@
     "--show-column-numbers",
     "--strict"
   ],
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": false
+    "source.organizeImports": true
   },
   "python.languageServer": "Pylance",
   "python.analysis.typeCheckingMode": "basic",
-  "python.analysis.extraPaths": ["./src/util"]
+  "python.analysis.extraPaths": ["./src/util"],
+  "python.defaultInterpreterPath": "/home/prod/.cache/pypoetry/virtualenvs/cs415-project-3-f05hspTe-py3.8/bin/python"
 }

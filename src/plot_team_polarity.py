@@ -12,11 +12,11 @@ from team_name_to_label import team_name_to_label
 
 
 def plot_team_polarity(  # type: ignore
-    team_name: str, data_source: Literal["reddit", "twitter"]
+    team_name: str, data_source: Literal["reddit", "twitter"], sample_window: str, resample_window,
 ) -> Figure:
     team_name_prettified = team_name_to_label(team_name)
     sns.set_theme(style="whitegrid")
-    df = fetch_team_df(team_name, data_source, sample_window="3D", resample_window="3H", all_data=True)
+    df = fetch_team_df(team_name, data_source, sample_window, resample_window, all_data=True)
     fig = plt.figure()
     ax = sns.lineplot(data=df["polarity"])
 

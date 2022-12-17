@@ -11,12 +11,13 @@ const BarChart = ({ data }) => {
             <Bar
                 datasetIdKey='id'
                 data={{
-                    labels: data[0],
                     datasets: [{
-                        data: data[1],
+                        data: data.frequency,
+                        label: "Houston Texans Reddit Post Frequency",
                         fill: false,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
+                        borderColor: 'rgb(75, 200, 175)',
+                        backgroundColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
                     }],
                 }}
             />

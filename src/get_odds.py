@@ -49,42 +49,69 @@ team_labels = [
     "Pittsburgh Steelers",
 ]
 
-def get_games_per_team(teams: List[str] = []) -> pd.DataFrame: # type: ignore
+
+def get_games_per_team(teams: List[str] = []) -> pd.DataFrame:  # type: ignore
     team_names = [team_name_to_label(team) for team in teams]
     print("teamnames", team_names)
     games = pd.DataFrame(get_games())
-    return games[(games["home_team"].isin(team_names)) | (games["away_team"].isin(team_names))]
+    return games[
+        (games["home_team"].isin(team_names)) | (games["away_team"].isin(team_names))
+    ]
+
 
 def get_avg_game_odds_h2h_per_book(game_id):
     collection_names: List[str] = db.list_collection_names()
     collection_names = [name for name in collection_names if name.startswith("odds_")]
-    
+
     bookmakersSet = {}
 
     for j in collection_names:
         gameOdds = pd.DataFrame(list(db[j].find({"_id": game_id})))
-        #type(gameOdds["h2h"].apply(lambda l: sum([i["outcomes"][0]["price"] for i in l])/len(l)))
+        # print(gameOdds["h2h"].iloc[0][0]["outcomes"][0]["name"])
+        # type(gameOdds["h2h"].apply(lambda l: sum([i["outcomes"][0]["price"] for i in l])/len(l)))
         try:
-            bookmakersSet[j[5:]] = gameOdds["h2h"].apply(lambda l: sum([i["outcomes"][0]["price"] for i in l])/len(l))[0]
-        except:
+            bookmakersSet[j[5:]] = {
+                "team1_name": gameOdds["h2h"].iloc[0][0]["outcomes"][0]["name"],
+                "team1_odds": gameOdds["h2h"].apply(
+                    lambda l: sum([i["outcomes"][0]["price"] for i in l]) / len(l)
+                )[0],
+                "team2_name": gameOdds["h2h"].iloc[0][0]["outcomes"][1]["name"],
+                "team2_odds": gameOdds["h2h"].apply(
+                    lambda l: sum([i["outcomes"][1]["price"] for i in l]) / len(l)
+                )[0],
+            }
+        except Exception as e:
             bookmakersSet[j[5:]] = 0
-    
+
     return bookmakersSet
+
 
 def get_ts_game_odds_h2h_per_book(game_id):
     collection_names: List[str] = db.list_collection_names()
     collection_names = [name for name in collection_names if name.startswith("odds_")]
-    
+
     bookmakersSet = {}
 
     for j in collection_names:
         gameOdds = pd.DataFrame(list(db[j].find({"_id": game_id})))
         try:
-            bookmakersSet[j[5:]] = gameOdds["h2h"].apply(lambda l: [(str(i["saved_at"]), i["outcomes"][0]["price"])  for i in l])[0]
+            bookmakersSet[j[5:]] = gameOdds["h2h"].apply(
+                lambda l: [
+                    {
+                        "time": str(i["saved_at"]),
+                        "team1_name": i["outcomes"][0]["name"],
+                        "team1_odds": i["outcomes"][0]["price"],
+                        "team2_name": i["outcomes"][1]["name"],
+                        "team2_odds": i["outcomes"][1]["price"],
+                    }
+                    for i in l
+                ]
+            )[0]
         except:
-            raise Exception("No odds found for game_id: " + str(game_id))
-    
+            pass
+
     return bookmakersSet
+
 
 def get_odds(teams=[]):
     games = pd.DataFrame(get_games())
@@ -102,8 +129,13 @@ def get_odds(teams=[]):
             gameOdds = pd.DataFrame(list(db[j].find({"_id": x})))
             # print(gameOdds) sum([i["0"]["outcomes"]["0"]["price"] for i in x])
             try:
-                gameOdds["h2h"] = gameOdds["h2h"].apply(lambda l: sum([i["outcomes"][0]["price"] for i in l])/len(l))
+                gameOdds["h2h"] = gameOdds["h2h"].apply(
+                    lambda l: sum([i["outcomes"][0]["price"] for i in l]) / len(l)
+                )
             except:
                 print("uh oh")
-    
-    return gamesOdds
+
+    return gameOdds
+
+
+# print(get_avg_game_odds_h2h_per_book("075dbff0219a3a1100c513400c4796ef"))

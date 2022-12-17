@@ -3,27 +3,33 @@ import { Line } from 'react-chartjs-2';
 import styles from "../styles/Home.module.css"
 
 
-const LineChart = ({ data: input }) => {
+const LineChart3 = ({ data: input }) => {
     // console.log(input[0][0])
     return (
         <div className={styles.card}>
             <Line
                 datasetIdKey='id'
                 data={{
-                        labels: input[0][0],
                         datasets: [{
                             id: 1,
-                            label: 'twitter positivity',
-                            data: input[0][1],
+                            label: 'Houston Texans twitter polarity',
+                            data: input[0].polarity,
                             fill: false,
                             borderColor: 'rgb(75, 192, 192)',
                             tension: 0.1
                         },{
                             id: 2,
-                            label: 'reddit positivity',
-                            data: input[1][1],
+                            label: 'Philadelphia Eagles twitter polarity',
+                            data: input[1].polarity,
                             fill: false,
                             borderColor: 'rgb(75, 200, 120)',
+                            tension: 0.1
+                        },{
+                            id: 3,
+                            label: 'Buffalo Bills twitter polarity',
+                            data: input[2].polarity,
+                            fill: false,
+                            borderColor: 'rgb(75, 120, 200)',
                             tension: 0.1
                         }],
                 }}
@@ -33,4 +39,4 @@ const LineChart = ({ data: input }) => {
 }
 
 
-export default LineChart;
+export default LineChart3;

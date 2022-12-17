@@ -106,11 +106,11 @@ def calculate_sentiment_diff(  # type: ignore
             raise ValueError("Los Angeles Rams not available on Reddit")
 
     home_team_df = fetch_team_df(
-        nfl_game["home_team"], "twitter", focus_datetime=nfl_game["timestamp"]
+        nfl_game["home_team"], data_source, focus_datetime=nfl_game["timestamp"]
     )
 
     away_team_df = fetch_team_df(
-        nfl_game["away_team"], "twitter", focus_datetime=nfl_game["timestamp"]
+        nfl_game["away_team"], data_source, focus_datetime=nfl_game["timestamp"]
     )
     
     home_team_score = df_int(home_team_df)
@@ -120,6 +120,7 @@ def calculate_sentiment_diff(  # type: ignore
         nfl_game["home_team"]: home_team_score,
         nfl_game["away_team"]: away_team_score,
         "delta": home_team_score - away_team_score,
+        "predicted_winner": home_team_score > away_team_score and nfl_game["home_team"] or away_team_score > home_team_score and nfl_game["away_team"],
         "winner": nfl_game["winner"],
         "theory_supporting": home_team_score > away_team_score and nfl_game["winner"] == nfl_game["home_team"] or home_team_score < away_team_score and nfl_game["winner"] == nfl_game["away_team"]
     }
